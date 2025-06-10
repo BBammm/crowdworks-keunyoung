@@ -1,4 +1,5 @@
 import PdfViewer from './components/PdfViewer'
+import JsonList from './components/JsonList'
 import pdfFile from './assets/1.report.pdf'
 
 function App() {
@@ -8,8 +9,7 @@ function App() {
         <PdfViewer fileUrl={pdfFile} />
       </div>
       <div className="w-1/2 p-4">
-        {/* 나중에 JSON 리스트 들어올 자리 */}
-        <div>JSON 리스트가 여기에 렌더링됩니다</div>
+        <JsonList />
       </div>
     </div>
   )
