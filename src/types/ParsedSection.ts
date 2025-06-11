@@ -1,3 +1,4 @@
+// src/types/ParsedSection.ts
 // 기본 bbox 타입
 export type BBox = {
   l: number
@@ -24,6 +25,7 @@ export type TableCell = {
   bbox: BBox
   rowspan?: number
   colspan?: number
+  page?: any
 }
 
 // 표 블록
@@ -31,12 +33,14 @@ export type TableBlock = {
   type: 'table'
   id: string
   page: number
+  bbox: BBox; // 이 줄을 추가해야 합니다!
   table: {
     num_rows: number
     num_cols: number
     cells: TableCell[]
   }
 }
+
 
 // 전체 블록 통합 타입
 export type SectionBlock = TextBlock | TableBlock

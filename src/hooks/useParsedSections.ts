@@ -86,6 +86,7 @@ export function useParsedSections(): Section[] {
           type: BlockType.Table,
           id: blockId,
           page,
+          bbox,
           table: {
             num_rows: blockData.data?.num_rows || 0,
             num_cols: blockData.data?.num_cols || 0,
