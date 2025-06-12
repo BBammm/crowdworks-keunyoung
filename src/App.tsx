@@ -16,17 +16,20 @@ function App() {
   ;(raw.texts || []).forEach((t: any) => textsMap.set(t.self_ref, t))
 
   const [highlight, setHighlight] = useState<{ text: string; bbox: BBox } | null>(null)
+  const [hoveredText, setHoveredText] = useState<string | null>(null)
 
   return (
     <div className="flex h-screen w-screen flex-col sm:flex-row">
       <div className="w-full sm:w-1/2 h-1/2 sm:h-full border-r">
-        <PdfViewer
-          pdfUrl={pdfFile}
-          pictures={pictures}
-          textsMap={textsMap}
-          highlight={highlight}
-          onPointClick={(text, bbox) => setHighlight({ text, bbox })}
-        />
+      <PdfViewer
+        pdfUrl={pdfFile}
+        pictures={pictures}
+        textsMap={textsMap}
+        highlight={highlight}
+        hoveredText={hoveredText}
+        onPointClick={(text, bbox) => setHighlight({ text, bbox })}
+        onPointHover={(text) => setHoveredText(text)}
+      />
       </div>
       <div className="w-full sm:w-1/2 h-1/2 sm:h-full overflow-y-auto p-4">
         <JsonList

@@ -1,7 +1,6 @@
 import { useRef, useState, useEffect } from 'react'
 import { Document, Page } from 'react-pdf'
 import type { BBox } from '../types/ParsedSection'
-import GraphOverlay from './Graph/GraphOverlay'
 import HighlightBox from './HighlightBox'
 
 type Props = {
@@ -9,7 +8,9 @@ type Props = {
   pictures: any[]
   textsMap: Map<string, any>
   highlight?: { text: string; bbox: BBox } | null
+  hoveredText?: string | null
   onPointClick?: (text: string, bbox: BBox) => void
+  onPointHover?: (text: string | null) => void
 }
 
 const PdfViewer = ({
@@ -17,7 +18,9 @@ const PdfViewer = ({
   pictures,
   textsMap,
   highlight,
+  hoveredText,
   onPointClick,
+  onPointHover
 }: Props) => {
   const containerRef = useRef<HTMLDivElement>(null)
   const [containerWidth, setContainerWidth] = useState(800)
@@ -66,15 +69,6 @@ const PdfViewer = ({
           }}
         />
       </Document>
-
-      <GraphOverlay
-        pictures={pictures}
-        textsMap={textsMap}
-        onPointClick={onPointClick}
-        highlight={highlight}
-        scale={scale}
-        pdfHeight={pdfHeight}
-      />
 
       {highlight && (
         <HighlightBox
