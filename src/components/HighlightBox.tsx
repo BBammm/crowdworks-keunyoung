@@ -7,13 +7,17 @@ type Props = {
 }
 
 const HighlightBox = ({ bbox, scale = 1, pdfHeight = 1000 }: Props) => {
+  if (!bbox || typeof bbox.l !== 'number') return null
+
+  const top = (pdfHeight - bbox.t) * scale
+  const height = (bbox.t - bbox.b) * scale
+
   const style = {
     position: 'absolute' as const,
     left: bbox.l * scale,
-    top: (pdfHeight - bbox.t) * scale,
+    top: top - 5,
     width: (bbox.r - bbox.l) * scale,
-    height: (bbox.t - bbox.b) * scale,
-    // border: '2px solid #ff0',
+    height: height + 10,
     backgroundColor: 'rgba(255, 255, 0, 0.3)',
     pointerEvents: 'none' as const,
     zIndex: 10,

@@ -20,14 +20,13 @@ const PdfViewer = ({
   highlight,
   hoveredText,
   onPointClick,
-  onPointHover
+  onPointHover,
 }: Props) => {
   const containerRef = useRef<HTMLDivElement>(null)
   const [containerWidth, setContainerWidth] = useState(800)
   const [scale, setScale] = useState(1)
   const [pdfHeight, setPdfHeight] = useState(1000)
 
-  // container 크기 감지
   useEffect(() => {
     const handleResize = () => {
       if (containerRef.current) {
@@ -41,7 +40,6 @@ const PdfViewer = ({
     return () => window.removeEventListener('resize', handleResize)
   }, [])
 
-  // 하이라이트 시 PDF 내 해당 위치로 스크롤 이동
   useEffect(() => {
     if (containerRef.current && highlight?.bbox) {
       const top = (pdfHeight - highlight.bbox.t) * scale
