@@ -2,11 +2,10 @@ import type { BBox } from '../types/ParsedSection'
 
 type Props = {
   texts: any[]
-  onTextHover: (text: string, bbox: BBox) => void
-  onTextLeave: () => void
+  onTextClick: (text: string, bbox: BBox) => void
 }
 
-const JsonList = ({ texts, onTextHover, onTextLeave }: Props) => {
+const JsonList = ({ texts, onTextClick }: Props) => {
   return (
     <div className="space-y-2 text-sm">
       {texts.map((t: any) => {
@@ -16,8 +15,7 @@ const JsonList = ({ texts, onTextHover, onTextLeave }: Props) => {
           <div
             key={t.self_ref}
             className="cursor-pointer hover:text-blue-600"
-            onMouseEnter={() => onTextHover(t.text, bbox)}
-            onMouseLeave={onTextLeave}
+            onClick={() => onTextClick(t.text, bbox)}
           >
             {t.text}
           </div>

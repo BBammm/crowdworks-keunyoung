@@ -31,8 +31,7 @@ function App() {
       <div className="w-full sm:w-1/2 h-1/2 sm:h-full overflow-y-auto p-4">
         <JsonList
           texts={raw.texts || []}
-          onTextHover={(text, bbox) => setHighlight({ text, bbox })}
-          onTextLeave={() => setHighlight(null)}
+          onTextClick={(text, bbox) => setHighlight({ text, bbox })}
         />
       </div>
     </div>

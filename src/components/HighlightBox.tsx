@@ -13,7 +13,7 @@ const HighlightBox = ({ bbox, scale = 1, pdfHeight = 1000 }: Props) => {
     top: (pdfHeight - bbox.t) * scale,
     width: (bbox.r - bbox.l) * scale,
     height: (bbox.t - bbox.b) * scale,
-    border: '2px solid #ff0',
+    // border: '2px solid #ff0',
     backgroundColor: 'rgba(255, 255, 0, 0.3)',
     pointerEvents: 'none' as const,
     zIndex: 10,
