@@ -77,10 +77,10 @@ export function useParsedSections(): Section[] {
             row: cell.start_row_offset_idx,
             col: cell.start_col_offset_idx,
             text: cell.text,
-            bbox: cell.prov?.[0]?.bbox,
+            bbox: cell?.bbox ?? null,
             rowspan: cell.row_span,
             colspan: cell.col_span,
-          })) || [];
+          })) || []
 
         const block: TableBlock = {
           type: BlockType.Table,

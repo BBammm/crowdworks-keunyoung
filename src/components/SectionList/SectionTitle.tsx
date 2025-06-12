@@ -1,23 +1,20 @@
-import React from 'react';
-import type { TextBlock, BBox } from '../../types/ParsedSection';
+import type { TextBlock } from '../../types/ParsedSection'
 
-interface SectionTitleProps {
-  block: TextBlock; // section_header 타입의 TextBlock
-  onHighlight: (page: number, bbox: BBox) => void;
-  onClearHighlight: () => void;
+type Props = {
+  block: TextBlock
+  onClick: () => void
+  isHovered?: boolean
 }
 
-const SectionTitle: React.FC<SectionTitleProps> = ({ block, onHighlight, onClearHighlight }) => {
+const SectionTitle = ({ block, onClick, isHovered }: Props) => {
   return (
-    <h3
-      className="text-xl font-semibold mb-3 text-blue-700"
-      onMouseEnter={() => onHighlight(block.page, block.bbox)}
-      onMouseLeave={onClearHighlight}
-      style={{ cursor: 'pointer', fontFamily: 'Inter, sans-serif' }}
+    <h2
+      onClick={onClick}
+      className={`text-lg font-bold text-gray-800 mb-2 px-2 py-1 cursor-pointer rounded ${isHovered ? 'bg-yellow-200' : ''}`}
     >
       {block.text}
-    </h3>
-  );
-};
+    </h2>
+  )
+}
 
-export default SectionTitle;
+export default SectionTitle

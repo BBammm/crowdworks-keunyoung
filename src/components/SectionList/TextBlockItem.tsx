@@ -1,23 +1,20 @@
-import React from 'react';
-import type { TextBlock, BBox } from '../../types/ParsedSection';
+import type { TextBlock } from '../../types/ParsedSection'
 
-interface TextBlockItemProps {
-  block: TextBlock;
-  onHighlight: (page: number, bbox: BBox) => void;
-  onClearHighlight: () => void;
+type Props = {
+  block: TextBlock
+  onClick: () => void
+  isHovered?: boolean
 }
 
-const TextBlockItem: React.FC<TextBlockItemProps> = ({ block, onHighlight, onClearHighlight }) => {
+const TextBlockItem = ({ block, onClick, isHovered }: Props) => {
   return (
-    <p
-      className="text-gray-700 leading-relaxed mb-2"
-      onMouseEnter={() => onHighlight(block.page, block.bbox)}
-      onMouseLeave={onClearHighlight}
-      style={{ cursor: 'pointer', fontFamily: 'Inter, sans-serif' }}
+    <div
+      onClick={onClick}
+      className={`cursor-pointer px-2 py-1 rounded ${isHovered ? 'bg-yellow-200' : ''}`}
     >
       {block.text}
-    </p>
-  );
-};
+    </div>
+  )
+}
 
-export default TextBlockItem;
+export default TextBlockItem

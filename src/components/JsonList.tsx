@@ -1,26 +1,27 @@
-import type { BBox } from '../types/ParsedSection'
+import type { Section } from '../types/ParsedSection'
+import SectionBlock from './SectionList/SectionBlock'
 
 type Props = {
-  texts: any[]
-  onTextClick: (text: string, bbox: BBox) => void
+  sections: Section[]
+  onTextClick: (text: string, bbox: any) => void
+  hoveredText?: string | null
 }
 
-const JsonList = ({ texts, onTextClick }: Props) => {
+const JsonList = ({ sections, onTextClick, hoveredText }: Props) => {
   return (
-    <div className="space-y-2 text-sm">
-      {texts.map((t: any) => {
-        const bbox = t.prov?.[0]?.bbox
-        if (!t.text || !bbox) return null
-        return (
-          <div
-            key={t.self_ref}
-            className="cursor-pointer hover:text-blue-600"
-            onClick={() => onTextClick(t.text, bbox)}
-          >
-            {t.text}
-          </div>
-        )
-      })}
+    <div className="space-y-4 text-sm overflow-y-auto h-full pr-2">
+      {sections.map((section, sectionIndex) => (
+        <div key={sectionIndex}>
+          {section.blocks.map((block) => (
+            <SectionBlock
+              key={block.id}
+              block={block}
+              onTextClick={onTextClick}
+              hoveredText={hoveredText}
+            />
+          ))}
+        </div>
+      ))}
     </div>
   )
 }

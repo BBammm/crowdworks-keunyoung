@@ -6,9 +6,12 @@ import { pdfjs } from 'react-pdf'
 import workerSrc from 'pdfjs-dist/build/pdf.worker.min?url'
 import type { BBox } from './types/ParsedSection'
 import JsonList from './components/JsonList'
+import { useParsedSections } from './hooks/useParsedSections'
 
 pdfjs.GlobalWorkerOptions.workerSrc = workerSrc
+
 function App() {
+  const sections = useParsedSections()
   const raw = jsonData as any
   const pictures = raw.pictures || []
 
@@ -33,8 +36,9 @@ function App() {
       </div>
       <div className="w-full sm:w-1/2 h-1/2 sm:h-full overflow-y-auto p-4">
         <JsonList
-          texts={raw.texts || []}
+          sections={sections}
           onTextClick={(text, bbox) => setHighlight({ text, bbox })}
+          hoveredText={hoveredText}
         />
       </div>
     </div>
