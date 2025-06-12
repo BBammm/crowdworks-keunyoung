@@ -11,6 +11,7 @@ type Props = {
   hoveredText?: string | null
   onPointClick?: (text: string, bbox: BBox) => void
   onPointHover?: (text: string | null) => void
+  onHeightChange?: (height: number) => void
 }
 
 const PdfViewer = ({
@@ -21,6 +22,7 @@ const PdfViewer = ({
   hoveredText,
   onPointClick,
   onPointHover,
+  onHeightChange,
 }: Props) => {
   const containerRef = useRef<HTMLDivElement>(null)
   const [containerWidth, setContainerWidth] = useState(800)
@@ -40,11 +42,12 @@ const PdfViewer = ({
     return () => window.removeEventListener('resize', handleResize)
   }, [])
 
+  
   useEffect(() => {
     if (containerRef.current && highlight?.bbox) {
-      const top = (pdfHeight - highlight.bbox.t) * scale
+      const top = highlight.bbox.t * scale
       containerRef.current.scrollTo({
-        top: top - 40,
+        top: pdfHeight - top - 50, // 좀 더 중앙을 위해 -50 계산.
         behavior: 'smooth',
       })
     }
@@ -64,6 +67,7 @@ const PdfViewer = ({
             const originalHeight = view[3] - view[1]
             setScale(containerWidth / originalWidth)
             setPdfHeight(originalHeight)
+            onHeightChange?.(originalHeight)
           }}
         />
       </Document>

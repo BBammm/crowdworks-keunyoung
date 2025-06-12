@@ -5,9 +5,10 @@ type Props = {
   sections: Section[]
   onTextClick: (text: string, bbox: any) => void
   hoveredText?: string | null
+  pdfHeight: number;
 }
 
-const JsonList = ({ sections, onTextClick, hoveredText }: Props) => {
+const JsonList = ({ sections, onTextClick, hoveredText, pdfHeight }: Props) => {
   return (
     <div className="space-y-4 text-sm overflow-y-auto h-full pr-2">
       {sections.map((section, sectionIndex) => (
@@ -18,6 +19,7 @@ const JsonList = ({ sections, onTextClick, hoveredText }: Props) => {
               block={block}
               onTextClick={onTextClick}
               hoveredText={hoveredText}
+              pdfHeight={pdfHeight}
             />
           ))}
         </div>

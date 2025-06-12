@@ -8,9 +8,10 @@ type Props = {
   block: SectionBlock;
   onTextClick: (text: string, bbox: BBox) => void;
   hoveredText?: string | null;
+  pdfHeight: number;
 };
 
-const SectionBlockRenderer = ({ block, onTextClick, hoveredText }: Props) => {
+const SectionBlockRenderer = ({ block, onTextClick, hoveredText, pdfHeight }: Props) => {
   switch (block.type) {
     case 'section_header':
       return (
@@ -33,6 +34,7 @@ const SectionBlockRenderer = ({ block, onTextClick, hoveredText }: Props) => {
         <TableViewer
           block={block as TableBlock}
           onTextClick={onTextClick}
+          pdfHeight={pdfHeight}
         />
       );
     case 'graph_point':

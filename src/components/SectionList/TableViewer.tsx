@@ -1,11 +1,13 @@
 import type { TableBlock, TableCell, BBox } from '../../types/ParsedSection'
+import { normalizeBBox } from '../../uitils/bboxUtils'
 
 type Props = {
   block: TableBlock
   onTextClick: (text: string, bbox: BBox) => void
+  pdfHeight: number;
 }
 
-const TableViewer = ({ block, onTextClick }: Props) => {
+const TableViewer = ({ block, onTextClick, pdfHeight }: Props) => {
   const { table } = block
   const rows: TableCell[][] = Array.from({ length: table.num_rows }, () => [])
 
@@ -41,7 +43,8 @@ const TableViewer = ({ block, onTextClick }: Props) => {
                     }`}
                     onClick={() => {
                       if (isClickable) {
-                        onTextClick(cell.text, bbox)
+                        const fixed = normalizeBBox(bbox, pdfHeight)
+                        onTextClick(cell.text, fixed)
                       }
                     }}
                   >
