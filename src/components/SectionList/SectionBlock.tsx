@@ -34,6 +34,7 @@ const SectionBlockRenderer = ({ block, onTextClick, hoveredText, pdfHeight }: Pr
         <TableViewer
           block={block as TableBlock}
           onTextClick={onTextClick}
+          isHovered={hoveredText === block.text} // ✅ 통일된 방식
           pdfHeight={pdfHeight}
         />
       );

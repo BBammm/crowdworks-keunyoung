@@ -12,11 +12,6 @@ const HighlightBox = ({ bbox, scale = 1, pdfHeight = 1000 }: Props) => {
   const top = (pdfHeight - bbox.t) * scale
   const height = Math.abs(bbox.b - bbox.t) * scale
 
-  console.log('pdfHeight = ', pdfHeight);
-  console.log('bbox.t = ', bbox.t);
-  console.log('scale = ', scale);
-  console.log('pdfHeight - bbox.t = ', pdfHeight - bbox.t);
-
   const style = {
     position: 'absolute' as const,
     left: bbox.l * scale,

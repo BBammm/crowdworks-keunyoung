@@ -38,7 +38,8 @@ export type TableBlock = {
     num_rows: number
     num_cols: number
     cells: TableCell[]
-  }
+  },
+  text?: any
 }
 
 

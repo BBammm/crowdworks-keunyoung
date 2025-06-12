@@ -2,10 +2,11 @@ import type { TableBlock, TableCell, BBox } from '../../types/ParsedSection'
 import { normalizeBBox } from '../../uitils/bboxUtils'
 
 type Props = {
-  block: TableBlock
-  onTextClick: (text: string, bbox: BBox) => void
+  block: TableBlock;
+  onTextClick: (text: string, bbox: BBox) => void;
+  isHovered?: boolean;
   pdfHeight: number;
-}
+};
 
 const TableViewer = ({ block, onTextClick, pdfHeight }: Props) => {
   const { table } = block
