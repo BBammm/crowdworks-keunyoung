@@ -1,14 +1,15 @@
-import type { Section } from '../types/ParsedSection'
+import type { BBox, Section } from '../types/ParsedSection'
 import SectionBlock from './SectionList/SectionBlock'
 
 type Props = {
   sections: Section[]
   onTextClick: (text: string, bbox: any) => void
-  hoveredText?: string | null
+  hoveredId?: string | null
+  hovered?: { text: string; bbox: BBox } | null
   pdfHeight: number;
 }
 
-const JsonList = ({ sections, onTextClick, hoveredText, pdfHeight }: Props) => {
+const JsonList = ({ sections, onTextClick, hoveredId, hovered, pdfHeight }: Props) => {
   return (
     <div className="space-y-4 text-sm overflow-y-auto h-full pr-2">
       {sections.map((section, sectionIndex) => (
@@ -18,7 +19,8 @@ const JsonList = ({ sections, onTextClick, hoveredText, pdfHeight }: Props) => {
               key={block.id}
               block={block}
               onTextClick={onTextClick}
-              hoveredText={hoveredText}
+              hoveredId={hoveredId}
+              hovered={hovered}
               pdfHeight={pdfHeight}
             />
           ))}

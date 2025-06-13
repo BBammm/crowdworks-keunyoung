@@ -65,7 +65,8 @@ function App() {
             const normalized = normalizeBBox(bbox, pdfHeight)
             setHighlight({ text, bbox: normalized })
           }}
-          hoveredText={hovered?.text}
+          hoveredId={hoveredId}
+          hovered={hovered}
           pdfHeight={pdfHeight}
         />
       </div>

@@ -7,18 +7,29 @@ import GraphPointItem from './GraphPointItem';
 type Props = {
   block: SectionBlock;
   onTextClick: (text: string, bbox: BBox) => void;
-  hoveredText?: string | null;
+  hoveredId?: string | null;
+  hovered?: { text: string; bbox: BBox } | null;
   pdfHeight: number;
 };
 
-const SectionBlockRenderer = ({ block, onTextClick, hoveredText, pdfHeight }: Props) => {
+const SectionBlockRenderer = ({ block, onTextClick, hoveredId, hovered, pdfHeight }: Props) => {
+  console.log(block)
+  const isActive = hovered
+    ? (
+        hovered.bbox.l === block.bbox.l &&
+        hovered.bbox.t === block.bbox.t &&
+        hovered.bbox.r === block.bbox.r &&
+        hovered.bbox.b === block.bbox.b
+      )
+    : false;
+
   switch (block.type) {
     case 'section_header':
       return (
         <SectionTitle
           block={block as TextBlock}
           onClick={() => onTextClick(block.text, block.bbox)}
-          isHovered={hoveredText === block.text}
+          isHovered={isActive}
         />
       );
     case 'text':
@@ -26,7 +37,7 @@ const SectionBlockRenderer = ({ block, onTextClick, hoveredText, pdfHeight }: Pr
         <TextBlockItem
           block={block as TextBlock}
           onClick={() => onTextClick(block.text, block.bbox)}
-          isHovered={hoveredText === block.text}
+          isHovered={isActive}
         />
       );
     case 'table':
@@ -34,7 +45,7 @@ const SectionBlockRenderer = ({ block, onTextClick, hoveredText, pdfHeight }: Pr
         <TableViewer
           block={block as TableBlock}
           onTextClick={onTextClick}
-          isHovered={hoveredText === block.text} // ✅ 통일된 방식
+          hovered={hovered}
           pdfHeight={pdfHeight}
         />
       );
@@ -43,7 +54,7 @@ const SectionBlockRenderer = ({ block, onTextClick, hoveredText, pdfHeight }: Pr
         <GraphPointItem
           block={block as TextBlock}
           onClick={() => onTextClick(block.text, block.bbox)}
-          isHovered={hoveredText === block.text}
+          isHovered={isActive}
         />
       );
     default:
