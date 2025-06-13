@@ -17,10 +17,20 @@ function App() {
 
   const textsMap = new Map<string, any>()
   ;(raw.texts || []).forEach((t: any) => textsMap.set(t.self_ref, t))
+  ;(raw.tables || []).forEach((table: any) => {
+    table?.data?.table_cells?.forEach((cell: any) => {
+      const patched = {
+        ...cell,
+        prov: cell.bbox ? [{ bbox: cell.bbox }] : undefined
+      }
+      textsMap.set(cell.text, patched)
+    })
+  })
 
   const [highlight, setHighlight] = useState<{ text: string; bbox: BBox } | null>(null)
   const [hoveredText, setHoveredText] = useState<string | null>(null)
   const [pdfHeight, setPdfHeight] = useState(1000)
+  const [hovered, setHovered] = useState<{ text: string; bbox: BBox } | null>(null)
 
   return (
     <div className="flex h-screen w-screen flex-col sm:flex-row">
@@ -30,10 +40,29 @@ function App() {
           pictures={pictures}
           textsMap={textsMap}
           highlight={highlight}
-          hoveredText={hoveredText}
+          hoveredText={hovered?.text}
+          hovered={hovered}
+          tables={raw.tables}
           onPointClick={(text, bbox) => setHighlight({ text, bbox })}
-          onPointHover={(text) => setHoveredText(text)}
-          onHeightChange={(h) => setPdfHeight(h)} // ✅ 여기서 전달
+          onPointHover={(text, bbox) => {
+            console.log('text = ',text);
+            console.log('bbox = ',bbox);
+            if (text) {
+              if (bbox) setHovered({ text, bbox })
+              else {
+                // 일반 텍스트의 bbox는 textsMap에서 찾아서 직접 설정
+                const t = Array.from(textsMap.values()).find((v) => v.text === text)
+                const fallbackBbox = t?.prov?.[0]?.bbox
+                console.log('t = ', t);
+                console.log('fallbackBbox = ', fallbackBbox);
+                if (fallbackBbox) setHovered({ text, bbox: fallbackBbox })
+                else setHovered(null)
+              }
+            } else {
+              setHovered(null)
+            }
+          }}
+          onHeightChange={(h) => setPdfHeight(h)}
         />
       </div>
       <div className="w-full sm:w-1/2 h-1/2 sm:h-full overflow-y-auto p-4">

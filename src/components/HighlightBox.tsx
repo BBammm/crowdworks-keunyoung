@@ -4,9 +4,10 @@ type Props = {
   bbox: BBox
   scale?: number
   pdfHeight?: number
+  type: string
 }
 
-const HighlightBox = ({ bbox, scale = 1, pdfHeight = 1000 }: Props) => {
+const HighlightBox = ({ bbox, scale = 1, pdfHeight = 1000, type }: Props) => {
   if (!bbox || typeof bbox.l !== 'number') return null
 
   const top = (pdfHeight - bbox.t) * scale

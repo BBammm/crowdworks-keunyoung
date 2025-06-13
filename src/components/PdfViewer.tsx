@@ -2,6 +2,7 @@ import { useRef, useState, useEffect } from 'react'
 import { Document, Page } from 'react-pdf'
 import type { BBox } from '../types/ParsedSection'
 import HighlightBox from './HighlightBox'
+import { normalizeBBox } from '../uitils/bboxUtils'
 
 type Props = {
   pdfUrl: string
@@ -9,8 +10,10 @@ type Props = {
   textsMap: Map<string, any>
   highlight?: { text: string; bbox: BBox } | null
   hoveredText?: string | null
+  hovered?: { text: string; bbox: BBox } | null
+  tables: any[]
   onPointClick?: (text: string, bbox: BBox) => void
-  onPointHover?: (text: string | null) => void
+  onPointHover?: (text: string | null, bbox?: BBox) => void
   onHeightChange?: (height: number) => void
 }
 
@@ -20,6 +23,8 @@ const PdfViewer = ({
   textsMap,
   highlight,
   hoveredText,
+  hovered,
+  tables,
   onPointClick,
   onPointHover,
   onHeightChange,
@@ -67,13 +72,37 @@ const PdfViewer = ({
               top: (pdfHeight - bbox.t) * scale,
               width: (bbox.r - bbox.l) * scale,
               height: (Math.abs(bbox.b - bbox.t) * scale) + 10,
-              zIndex: 9999
+              zIndex: 9999,
             }}
             onMouseEnter={() => onPointHover?.(t.text)}
             onMouseLeave={() => onPointHover?.(null)}
           />
         )
       })}
+      {/* 테이블 셀 오버레이 (마우스 이벤트 감지용) */}
+      {tables.flatMap((table, tableIdx) =>
+        (table?.data?.table_cells || []).map((cell: any, i: number) => {
+          const rawBbox = cell?.bbox
+          if (!rawBbox) return null
+          const bbox = normalizeBBox(rawBbox, pdfHeight)
+
+          return (
+            <div
+              key={`table-${tableIdx}-cell-${i}`}
+              className="absolute z-999"
+              style={{
+                left: bbox.l * scale,
+                top: (pdfHeight - bbox.t) * scale,
+                width: (bbox.r - bbox.l) * scale,
+                height: (Math.abs(bbox.b - bbox.t) * scale),
+                zIndex: 9999,
+              }}
+              onMouseEnter={() => onPointHover?.(cell.text, bbox)}
+              onMouseLeave={() => onPointHover?.(null)}
+            />
+          )
+        })
+      )}
 
       {/* PDF 렌더링 */}
       <Document file={pdfUrl}>
@@ -94,17 +123,14 @@ const PdfViewer = ({
       </Document>
 
       {/* hoveredText 하이라이트 */}
-      {hoveredText && (() => {
-        const item = Array.from(textsMap.values()).find((t: any) => t.text === hoveredText)
-        const bbox = item?.prov?.[0]?.bbox
-        return bbox ? (
-          <HighlightBox
-            bbox={bbox}
-            scale={scale}
-            pdfHeight={pdfHeight}
-          />
-        ) : null
-      })()}
+      {hovered && (
+        <HighlightBox
+          bbox={hovered.bbox}
+          scale={scale}
+          pdfHeight={pdfHeight}
+          type={'pdf'}
+        />
+      )}
 
       {/* 클릭된 highlight 하이라이트 */}
       {highlight && (
@@ -112,6 +138,7 @@ const PdfViewer = ({
           bbox={highlight.bbox}
           scale={scale}
           pdfHeight={pdfHeight}
+          type={'json'}
         />
       )}
     </div>
