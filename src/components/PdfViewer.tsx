@@ -9,11 +9,11 @@ type Props = {
   pictures: any[]
   textsMap: Map<string, any>
   highlight?: { text: string; bbox: BBox } | null
-  hoveredText?: string | null
+  hoveredId?: string | null
   hovered?: { text: string; bbox: BBox } | null
   tables: any[]
   onPointClick?: (text: string, bbox: BBox) => void
-  onPointHover?: (text: string | null, bbox?: BBox) => void
+  onPointHover?: (id: string | null) => void
   onHeightChange?: (height: number) => void
 }
 
@@ -22,7 +22,7 @@ const PdfViewer = ({
   pictures,
   textsMap,
   highlight,
-  hoveredText,
+  hoveredId,
   hovered,
   tables,
   onPointClick,
@@ -59,50 +59,29 @@ const PdfViewer = ({
 
   return (
     <div ref={containerRef} className="relative w-full h-full overflow-y-scroll">
-      {/* 텍스트 오버레이 (마우스 이벤트 감지용) */}
-      {Array.from(textsMap.values()).map((t: any, i) => {
+      {/* 텍스트 오버레이 */}
+      {Array.from(textsMap.entries()).map(([id, t]) => {
         const bbox = t.prov?.[0]?.bbox
         if (!bbox) return null
+        const normalized = normalizeBBox(bbox, pdfHeight)
+        console.log('normalized = ', normalized)
+
         return (
           <div
-            key={i}
+            key={id}
             className="absolute z-999"
             style={{
-              left: bbox.l * scale,
-              top: (pdfHeight - bbox.t) * scale,
-              width: (bbox.r - bbox.l) * scale,
-              height: (Math.abs(bbox.b - bbox.t) * scale) + 10,
+              left: normalized.l * scale,
+              top: (pdfHeight - normalized.t) * scale,
+              width: (normalized.r - normalized.l) * scale,
+              height: (Math.abs(normalized.b - normalized.t) * scale) + 10,
               zIndex: 9999,
             }}
-            onMouseEnter={() => onPointHover?.(t.text)}
+            onMouseEnter={() => onPointHover?.(id)}
             onMouseLeave={() => onPointHover?.(null)}
           />
         )
       })}
-      {/* 테이블 셀 오버레이 (마우스 이벤트 감지용) */}
-      {tables.flatMap((table, tableIdx) =>
-        (table?.data?.table_cells || []).map((cell: any, i: number) => {
-          const rawBbox = cell?.bbox
-          if (!rawBbox) return null
-          const bbox = normalizeBBox(rawBbox, pdfHeight)
-
-          return (
-            <div
-              key={`table-${tableIdx}-cell-${i}`}
-              className="absolute z-999"
-              style={{
-                left: bbox.l * scale,
-                top: (pdfHeight - bbox.t) * scale,
-                width: (bbox.r - bbox.l) * scale,
-                height: (Math.abs(bbox.b - bbox.t) * scale),
-                zIndex: 9999,
-              }}
-              onMouseEnter={() => onPointHover?.(cell.text, bbox)}
-              onMouseLeave={() => onPointHover?.(null)}
-            />
-          )
-        })
-      )}
 
       {/* PDF 렌더링 */}
       <Document file={pdfUrl}>
@@ -122,23 +101,23 @@ const PdfViewer = ({
         />
       </Document>
 
-      {/* hoveredText 하이라이트 */}
+      {/* hovered 하이라이트 */}
       {hovered && (
         <HighlightBox
-          bbox={hovered.bbox}
+          bbox={normalizeBBox(hovered.bbox, pdfHeight)}
           scale={scale}
           pdfHeight={pdfHeight}
-          type={'pdf'}
+          type="pdf"
         />
       )}
 
       {/* 클릭된 highlight 하이라이트 */}
       {highlight && (
         <HighlightBox
-          bbox={highlight.bbox}
+          bbox={normalizeBBox(highlight.bbox, pdfHeight)}
           scale={scale}
           pdfHeight={pdfHeight}
-          type={'json'}
+          type="json"
         />
       )}
     </div>
