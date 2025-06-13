@@ -7,6 +7,7 @@ import workerSrc from 'pdfjs-dist/build/pdf.worker.min?url'
 import type { BBox } from './types/ParsedSection'
 import JsonList from './components/JsonList'
 import { useParsedSections } from './hooks/useParsedSections'
+import { normalizeBBox } from './uitils/bboxUtils'
 
 pdfjs.GlobalWorkerOptions.workerSrc = workerSrc
 
@@ -60,7 +61,10 @@ function App() {
       <div className="w-full sm:w-1/2 h-1/2 sm:h-full overflow-y-auto p-4">
         <JsonList
           sections={sections}
-          onTextClick={(text, bbox) => setHighlight({ text, bbox })}
+          onTextClick={(text, bbox) => {
+            const normalized = normalizeBBox(bbox, pdfHeight)
+            setHighlight({ text, bbox: normalized })
+          }}
           hoveredText={hovered?.text}
           pdfHeight={pdfHeight}
         />

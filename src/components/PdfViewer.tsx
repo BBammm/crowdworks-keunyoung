@@ -50,8 +50,9 @@ const PdfViewer = ({
   useEffect(() => {
     if (containerRef.current && highlight?.bbox) {
       const top = pdfHeight - highlight.bbox.t * scale
+      const normalized = normalizeBBox(highlight.bbox, pdfHeight)
       containerRef.current.scrollTo({
-        top: top - 50,
+        top: (pdfHeight - normalized.t) * scale - 150,
         behavior: 'smooth',
       })
     }
@@ -64,7 +65,6 @@ const PdfViewer = ({
         const bbox = t.prov?.[0]?.bbox
         if (!bbox) return null
         const normalized = normalizeBBox(bbox, pdfHeight)
-        console.log('normalized = ', normalized)
 
         return (
           <div
