@@ -82,7 +82,6 @@ function App() {
                 setHighlight({ text, bbox: normalized })
                 setSelectedId(id)
               }}
-              hoveredId={hoveredId}
               hovered={hovered}
               pdfHeight={pdfHeight}
               selectedId={selectedId}

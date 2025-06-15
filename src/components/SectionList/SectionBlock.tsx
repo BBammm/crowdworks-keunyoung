@@ -8,7 +8,6 @@ import GraphPointItem from './GraphPointItem'
 type Props = {
   block: SectionBlock
   onTextClick: (text: string, bbox: BBox, id: string) => void
-  hoveredId?: string | null
   hovered?: { text: string; bbox: BBox } | null
   selectedId?: string | null
   onSelect: (id: string) => void
@@ -18,7 +17,6 @@ type Props = {
 const SectionBlockRenderer: React.FC<Props> = ({
   block,
   onTextClick,
-  hoveredId,
   hovered,
   selectedId,
   onSelect,

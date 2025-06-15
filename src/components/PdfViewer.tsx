@@ -19,13 +19,9 @@ type Props = {
 
 const PdfViewer = ({
   pdfUrl,
-  pictures,
   textsMap,
   highlight,
-  hoveredId,
   hovered,
-  tables,
-  onPointClick,
   onPointHover,
   onHeightChange,
 }: Props) => {
