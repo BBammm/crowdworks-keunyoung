@@ -1,8 +1,7 @@
-import { useMemo } from 'react'; // useMemo 훅을 임포트합니다.
+import { useMemo } from 'react';
 import type { Section, SectionBlock, TextBlock, TableBlock, TableCell } from '../types/ParsedSection';
-import rawData from '../assets/data/1.report.json'; // 1.report.json 파일을 참조합니다.
+import rawData from '../assets/data/1.report.json';
 
-// 1. 블록 타입을 위한 Enum 정의
 enum BlockType {
   SectionHeader = 'section_header',
   GraphPoint = 'graph_point',
@@ -10,7 +9,6 @@ enum BlockType {
   Table = 'table',
 }
 
-// 2. 참조 문자열 파싱을 위한 헬퍼 함수
 interface RefInfo {
   type: string;
   id: string;
@@ -18,16 +16,14 @@ interface RefInfo {
 
 function parseRef(ref: string): RefInfo | null {
   const parts = ref.split('/');
-  if (parts.length < 3) return null; // 유효하지 않은 참조 형식
-  const type = parts[1]; // 'texts', 'tables', 'groups', 'pictures'
-  const id = parts[2];   // 숫자 ID
+  if (parts.length < 3) return null;
+  const type = parts[1];
+  const id = parts[2];
   return { type, id };
 }
 
 export function useParsedSections(): Section[] {
-  // useMemo를 사용하여 rawData가 변경될 때만 파싱 로직을 재실행합니다.
   const parsedSections = useMemo(() => {
-    // 각 콘텐츠 타입별로 빠른 조회를 위한 Map을 생성합니다.
     const textsMap = new Map<string, any>();
     rawData.texts.forEach((t: any) => textsMap.set(t.self_ref, t));
 
@@ -43,21 +39,19 @@ export function useParsedSections(): Section[] {
     const sections: Section[] = [];
     let currentSection: Section | null = null;
 
-    // 개별 블록(텍스트, 테이블)을 처리하고 SectionBlock 형태로 반환하는 헬퍼 함수
     const processBlock = (blockData: any, type: BlockType | 'table'): SectionBlock | null => {
-      // 필수 데이터(prov, page_no, bbox)가 없으면 처리하지 않습니다.
       if (!blockData || !blockData.prov || !blockData.prov[0]) {
-        console.warn('Block data missing essential provenance information:', blockData);
+        console.warn('누락된 데이터:', blockData);
         return null;
       }
       const page = blockData.prov?.[0]?.page_no;
       const bbox = blockData.prov?.[0]?.bbox;
       if (!page || !bbox) {
-        console.warn('Block data missing page or bbox information:', blockData);
+        console.warn('bbbox 누락됨:', blockData);
         return null;
       }
 
-      const blockId = `block-${blockData.self_ref.split('/').pop()}`; // ID 생성 로직 중앙화
+      const blockId = `block-${blockData.self_ref.split('/').pop()}`;
 
       if (type === BlockType.Text || type === BlockType.SectionHeader || type === BlockType.GraphPoint) {
         const isSectionHeader = blockData.label === BlockType.SectionHeader;
@@ -71,7 +65,7 @@ export function useParsedSections(): Section[] {
           type: isSectionHeader ? BlockType.SectionHeader : isGraphPoint ? BlockType.GraphPoint : BlockType.Text,
         };
         return block;
-      } else if (type === BlockType.Table) { // type string 'table'
+      } else if (type === BlockType.Table) {
         const cells: TableCell[] =
           blockData.data?.table_cells?.map((cell: any) => ({
             row: cell.start_row_offset_idx,
@@ -95,15 +89,14 @@ export function useParsedSections(): Section[] {
         };
         return block;
       }
-      console.warn('Unsupported block type in processBlock:', type, blockData);
+      console.warn('지원하지 않는 타입 유형:', type, blockData);
       return null;
     };
 
-    // rawData.body.children 배열을 순회하며 문서 순서대로 콘텐츠를 처리합니다.
     rawData.body.children.forEach((childRef: any) => {
       const refInfo = parseRef(childRef.$ref);
       if (!refInfo) {
-        console.warn('Invalid ref format:', childRef.$ref);
+        console.warn('잘못된 참조:', childRef.$ref);
         return;
       }
 
@@ -130,17 +123,17 @@ export function useParsedSections(): Section[] {
                 const textBlock = processBlock(textData, BlockType.Text);
                 if (textBlock) {
                   if (!currentSection) {
-                    currentSection = { title: "Untitled Section", blocks: [] };
+                    currentSection = { title: "타이틀이 존재하지 않습니다.", blocks: [] };
                     sections.push(currentSection);
                   }
                   currentSection.blocks.push(textBlock);
                 }
               } else if (groupChildRefInfo) {
-                console.warn('Unsupported child type in group:', groupChildRefInfo.type, groupChildRef.$ref);
+                console.warn('잘못된 groups 유형:', groupChildRefInfo.type, groupChildRef.$ref);
               }
             });
           }
-          return; // 그룹은 자식을 처리했으므로 다음 최상위 자식으로 넘어갑니다.
+          return;
         }
         case 'pictures': {
           const pictureData = picturesMap.get(childRef.$ref);
@@ -152,20 +145,20 @@ export function useParsedSections(): Section[] {
                       const textBlock = processBlock(textData, BlockType.Text);
                       if (textBlock) {
                           if (!currentSection) {
-                              currentSection = { title: "Untitled Section", blocks: [] };
+                              currentSection = { title: "타이틀이 존재하지 않습니다", blocks: [] };
                               sections.push(currentSection);
                           }
                           currentSection.blocks.push(textBlock);
                       }
                   } else if (pictureChildRefInfo) {
-                      console.warn('Unsupported child type in picture:', pictureChildRefInfo.type, pictureChildRef.$ref);
+                      console.warn('잘못된 picture 유형:', pictureChildRefInfo.type, pictureChildRef.$ref);
                   }
               });
           }
-          return; // 그림 내 자식 텍스트들은 처리되었으므로 다음 최상위 자식으로 넘어갑니다.
+          return;
         }
         default:
-          console.warn('Unhandled top-level reference type:', refInfo.type, childRef.$ref);
+          console.warn('잘못된 최상위 유형:', refInfo.type, childRef.$ref);
           return;
       }
 
@@ -173,7 +166,7 @@ export function useParsedSections(): Section[] {
       if (block) {
         if (block.type === BlockType.SectionHeader || !currentSection) {
           currentSection = {
-            title: block.type === BlockType.SectionHeader ? block.text : "Untitled Section",
+            title: block.type === BlockType.SectionHeader ? block.text : "타이틀이 존재하지 않습니다",
             blocks: [block],
           };
           sections.push(currentSection);
@@ -184,7 +177,7 @@ export function useParsedSections(): Section[] {
     });
 
     return sections;
-  }, [rawData]); // rawData가 변경될 때만 useMemo 내부 로직이 재실행됩니다.
+  }, [rawData]);
 
   return parsedSections;
 }
