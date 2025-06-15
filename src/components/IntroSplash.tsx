@@ -24,7 +24,7 @@ export default function IntroSplash({ show, onFinish }: Props) {
             exit={{ y: -40, opacity: 0, transition: { duration: 0.5 } }}
             className="text-3xl md:text-5xl font-bold text-gray-900"
           >
-            Crowdworks 김근영 프로젝트
+            김근영 프로젝트
           </motion.div>
         </motion.div>
       )}
