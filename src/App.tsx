@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import PdfViewer from './components/PdfViewer'
 import pdfFile from '/1.report.pdf'
 import jsonData from './assets/data/1.report.json'
@@ -8,6 +8,7 @@ import type { BBox } from './types/ParsedSection'
 import JsonList from './components/JsonList'
 import { useParsedSections } from './hooks/useParsedSections'
 import { normalizeBBox } from './uitils/bboxUtils'
+import IntroSplash from './components/IntroSplash'
 
 pdfjs.GlobalWorkerOptions.workerSrc = workerSrc
 
@@ -44,42 +45,58 @@ function App() {
       })()
     : null
   
+  const [showSplash, setShowSplash] = useState(true);
+  useEffect(() => {
+    if (showSplash) {
+      const t = setTimeout(() => setShowSplash(false), 1600);
+      return () => clearTimeout(t);
+    }
+  }, [showSplash]);
+
+
   return (
-    <div className="flex h-screen w-screen flex-col sm:flex-row">
-      <div className="w-full sm:w-1/2 h-1/2 sm:h-full border-r">
-        <PdfViewer
-          pdfUrl={pdfFile}
-          pictures={pictures}
-          textsMap={textsMap}
-          highlight={highlight}
-          hovered={hovered}
-          hoveredId={hoveredId}
-          tables={raw.tables}
-          onPointClick={(text, bbox) => setHighlight({ text, bbox })}
-          onPointHover={(id) => setHoveredId(id)}
-          onHeightChange={(h) => setPdfHeight(h)}
-        />
-      </div>
-      <div className="w-full sm:w-1/2 h-1/2 sm:h-full overflow-y-auto p-4">
-        <JsonList
-          sections={sections}
-          onTextClick={(text, bbox, id) => {
-            const normalized = normalizeBBox(bbox, pdfHeight)
-            setHighlight({ text, bbox: normalized })
-            setSelectedId(id)
-          }}
-          hoveredId={hoveredId}
-          hovered={hovered}
-          pdfHeight={pdfHeight}
-          selectedId={selectedId}
-          onSelect={(id) => {
-            console.log('App에서 setSelectedId 호출:', id)
-            setSelectedId(id)
-          }}
-        />
-      </div>
-    </div>
+    <>
+      <IntroSplash show={showSplash} onFinish={() => setShowSplash(false)} />
+      {!showSplash && (
+        <div className="flex h-screen w-screen flex-col sm:flex-row">
+          {/* 이하 기존 코드 */}
+          <div className="w-full sm:w-1/2 h-1/2 sm:h-full border-r">
+            <PdfViewer
+              pdfUrl={pdfFile}
+              pictures={pictures}
+              textsMap={textsMap}
+              highlight={highlight}
+              hovered={hovered}
+              hoveredId={hoveredId}
+              tables={raw.tables}
+              onPointClick={(text, bbox) => setHighlight({ text, bbox })}
+              onPointHover={(id) => setHoveredId(id)}
+              onHeightChange={(h) => setPdfHeight(h)}
+            />
+          </div>
+          <div className="w-full sm:w-1/2 h-1/2 sm:h-full overflow-y-auto p-4">
+            <JsonList
+              sections={sections}
+              onTextClick={(text, bbox, id) => {
+                const normalized = normalizeBBox(bbox, pdfHeight)
+                setHighlight({ text, bbox: normalized })
+                setSelectedId(id)
+              }}
+              hoveredId={hoveredId}
+              hovered={hovered}
+              pdfHeight={pdfHeight}
+              selectedId={selectedId}
+              onSelect={(id) => {
+                console.log('App에서 setSelectedId 호출:', id)
+                setSelectedId(id)
+              }}
+            />
+          </div>
+        </div>
+      )}
+    </>
   )
+
 }
 
 export default App
