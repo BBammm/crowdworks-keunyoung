@@ -44,8 +44,6 @@ function App() {
       })()
     : null
   
-  console.log('in APP selectedId ', selectedId)
-
   return (
     <div className="flex h-screen w-screen flex-col sm:flex-row">
       <div className="w-full sm:w-1/2 h-1/2 sm:h-full border-r">
@@ -73,9 +71,9 @@ function App() {
           hoveredId={hoveredId}
           hovered={hovered}
           pdfHeight={pdfHeight}
-          selectedId={selectedId}        // ← pass down the one selection
+          selectedId={selectedId}
           onSelect={(id) => {
-            console.log('idididididid ==== ', id);
+            console.log('App에서 setSelectedId 호출:', id)
             setSelectedId(id)
           }}
         />

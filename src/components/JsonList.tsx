@@ -20,7 +20,7 @@ const JsonList = ({ sections, onTextClick, hoveredId, hovered, selectedId, onSel
             <SectionBlock
               key={block.id}
               block={block}
-              onTextClick={(text, bbox) => onTextClick(text, bbox, block.id)}
+              onTextClick={onTextClick}
               hoveredId={hoveredId}
               hovered={hovered}
               selectedId={selectedId}

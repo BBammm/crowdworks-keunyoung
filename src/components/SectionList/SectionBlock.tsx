@@ -7,7 +7,7 @@ import GraphPointItem from './GraphPointItem'
 
 type Props = {
   block: SectionBlock
-  onTextClick: (text: string, bbox: BBox) => void
+  onTextClick: (text: string, bbox: BBox, id: string) => void
   hoveredId?: string | null
   hovered?: { text: string; bbox: BBox } | null
   selectedId?: string | null
@@ -24,7 +24,6 @@ const SectionBlockRenderer: React.FC<Props> = ({
   onSelect,
   pdfHeight,
 }) => {
-  // hover 여부 계산 (기존 로직)
   let isActive = false
   if (hovered) {
     const hb = hovered.bbox
@@ -44,10 +43,8 @@ const SectionBlockRenderer: React.FC<Props> = ({
     }
   }
 
-  // 선택 여부 (단, 테이블 블록 자체는 제외)
   const isSelected = selectedId === block.id
 
-  // **여기만 바꿨습니다**: 테이블 블록일 땐 wrapper 에 cyan 배경을 주지 않음
   const wrapperClass = [
     isActive ? 'bg-yellow-100' : null,
     block.type !== 'table' && isSelected ? 'bg-cyan-200' : null,
@@ -55,9 +52,8 @@ const SectionBlockRenderer: React.FC<Props> = ({
   .filter(Boolean)
   .join(' ')
 
-  // 텍스트/헤더/그래프 클릭 시 block.id 로 선택
-  const clickAndSelect = (text: string, bbox: BBox) => {
-    onTextClick(text, bbox)
+  const clickAndSelect = (text: any, bbox: any) => {
+    onTextClick(text, bbox, block.id)
     onSelect(block.id)
   }
 

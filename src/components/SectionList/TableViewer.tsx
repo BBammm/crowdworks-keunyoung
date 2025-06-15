@@ -5,12 +5,10 @@ import { normalizeBBox } from '../../uitils/bboxUtils'
 
 type Props = {
   block: TableBlock
-  onTextClick: (text: string, bbox: BBox) => void
+  onTextClick: (text: string, bbox: BBox, cellId: any) => void
   pdfHeight: number
   hovered?: { text: string; bbox: BBox } | null
-  /** App에서 내려주는, 마지막 클릭된 ID (block.id 또는 cellId) */
   selectedId?: string | null
-  /** 셀 클릭 시 부모(App)로 ID 올려주는 콜백 */
   onSelect: (cellId: string) => void
 }
 
@@ -24,8 +22,6 @@ const TableViewer: React.FC<Props> = ({
 }) => {
   const [selectedCellId, setSelectedCellId] = useState<string|null>(null)
   useEffect(() => {
-    // selectedId 가 "block-<tableId>-<r>-<c>" 형태로 시작하는 경우만 유지
-    console.log('selectedId ==== ', selectedId);
     if (!selectedId?.startsWith(`${block.id}-`)) {
       setSelectedCellId(null)
     }
@@ -59,7 +55,6 @@ const TableViewer: React.FC<Props> = ({
                 && norm.b===hoveredNorm.b
 
               const cellId = `${block.id}-${cell.row}-${cell.col}`
-              // 로컬 state로만 비교
               const isSelected = selectedCellId === cellId
 
               return (
@@ -75,11 +70,11 @@ const TableViewer: React.FC<Props> = ({
                     ${isSelected ? 'bg-cyan-200'    : ''}
                   `}
                   onClick={() => {
-                    // 1) 로컬 state 변경
                     setSelectedCellId(cellId)
                     onSelect(cellId)
+                    console.log('TableViewer cell click: onSelect(', cellId, ')')
                     const nb = normalizeBBox(cell.bbox, pdfHeight)
-                    onTextClick(cell.text, nb)
+                    onTextClick(cell.text, nb, cellId)
                   }}
                 >
                   {cell.text}
