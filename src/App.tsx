@@ -33,6 +33,8 @@ function App() {
   const [highlight, setHighlight] = useState<{ text: string; bbox: BBox } | null>(null)
   const [hoveredId, setHoveredId] = useState<string | null>(null)
   const [pdfHeight, setPdfHeight] = useState(1000)
+  const [selectedId, setSelectedId] = useState<string | null>(null)
+
 
   const hovered = hoveredId
     ? (() => {
@@ -41,6 +43,8 @@ function App() {
         return bbox ? { text: item.text, bbox } : null
       })()
     : null
+  
+  console.log('in APP selectedId ', selectedId)
 
   return (
     <div className="flex h-screen w-screen flex-col sm:flex-row">
@@ -61,13 +65,19 @@ function App() {
       <div className="w-full sm:w-1/2 h-1/2 sm:h-full overflow-y-auto p-4">
         <JsonList
           sections={sections}
-          onTextClick={(text, bbox) => {
+          onTextClick={(text, bbox, id) => {
             const normalized = normalizeBBox(bbox, pdfHeight)
             setHighlight({ text, bbox: normalized })
+            setSelectedId(id)
           }}
           hoveredId={hoveredId}
           hovered={hovered}
           pdfHeight={pdfHeight}
+          selectedId={selectedId}        // ← pass down the one selection
+          onSelect={(id) => {
+            console.log('idididididid ==== ', id);
+            setSelectedId(id)
+          }}
         />
       </div>
     </div>

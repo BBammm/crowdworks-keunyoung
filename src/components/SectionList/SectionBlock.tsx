@@ -1,19 +1,30 @@
 import React, { useRef, useEffect } from 'react'
-import type { SectionBlock, TextBlock, TableBlock, BBox } from '../../types/ParsedSection';
-import SectionTitle from './SectionTitle';
-import TextBlockItem from './TextBlockItem';
-import TableViewer from './TableViewer';
-import GraphPointItem from './GraphPointItem';
+import type { SectionBlock, TextBlock, TableBlock, BBox } from '../../types/ParsedSection'
+import SectionTitle from './SectionTitle'
+import TextBlockItem from './TextBlockItem'
+import TableViewer from './TableViewer'
+import GraphPointItem from './GraphPointItem'
 
 type Props = {
-  block: SectionBlock;
-  onTextClick: (text: string, bbox: BBox) => void;
-  hoveredId?: string | null;
-  hovered?: { text: string; bbox: BBox } | null;
-  pdfHeight: number;
-};
+  block: SectionBlock
+  onTextClick: (text: string, bbox: BBox) => void
+  hoveredId?: string | null
+  hovered?: { text: string; bbox: BBox } | null
+  selectedId?: string | null
+  onSelect: (id: string) => void
+  pdfHeight: number
+}
 
-const SectionBlockRenderer = ({ block, onTextClick, hoveredId, hovered, pdfHeight }: Props) => {
+const SectionBlockRenderer: React.FC<Props> = ({
+  block,
+  onTextClick,
+  hoveredId,
+  hovered,
+  selectedId,
+  onSelect,
+  pdfHeight,
+}) => {
+  // hover 여부 계산 (기존 로직)
   let isActive = false
   if (hovered) {
     const hb = hovered.bbox
@@ -33,6 +44,24 @@ const SectionBlockRenderer = ({ block, onTextClick, hoveredId, hovered, pdfHeigh
     }
   }
 
+  // 선택 여부 (단, 테이블 블록 자체는 제외)
+  const isSelected = selectedId === block.id
+
+  // **여기만 바꿨습니다**: 테이블 블록일 땐 wrapper 에 cyan 배경을 주지 않음
+  const wrapperClass = [
+    isActive ? 'bg-yellow-100' : null,
+    block.type !== 'table' && isSelected ? 'bg-cyan-200' : null,
+  ]
+  .filter(Boolean)
+  .join(' ')
+
+  // 텍스트/헤더/그래프 클릭 시 block.id 로 선택
+  const clickAndSelect = (text: string, bbox: BBox) => {
+    onTextClick(text, bbox)
+    onSelect(block.id)
+  }
+
+  // 스크롤용 ref
   const ref = useRef<HTMLDivElement>(null)
   useEffect(() => {
     if (isActive && ref.current) {
@@ -40,13 +69,14 @@ const SectionBlockRenderer = ({ block, onTextClick, hoveredId, hovered, pdfHeigh
     }
   }, [isActive])
 
+  // 실제 렌더링할 콘텐츠 결정
   let content: React.ReactNode
   switch (block.type) {
     case 'section_header':
       content = (
         <SectionTitle
           block={block as TextBlock}
-          onClick={() => onTextClick(block.text, block.bbox)}
+          onClick={() => clickAndSelect(block.text, block.bbox)}
           isHovered={isActive}
         />
       )
@@ -56,7 +86,17 @@ const SectionBlockRenderer = ({ block, onTextClick, hoveredId, hovered, pdfHeigh
       content = (
         <TextBlockItem
           block={block as TextBlock}
-          onClick={() => onTextClick(block.text, block.bbox)}
+          onClick={() => clickAndSelect(block.text, block.bbox)}
+          isHovered={isActive}
+        />
+      )
+      break
+
+    case 'graph_point':
+      content = (
+        <GraphPointItem
+          block={block as TextBlock}
+          onClick={() => clickAndSelect(block.text, block.bbox)}
           isHovered={isActive}
         />
       )
@@ -69,16 +109,8 @@ const SectionBlockRenderer = ({ block, onTextClick, hoveredId, hovered, pdfHeigh
           onTextClick={onTextClick}
           hovered={hovered}
           pdfHeight={pdfHeight}
-        />
-      )
-      break
-
-    case 'graph_point':
-      content = (
-        <GraphPointItem
-          block={block as TextBlock}
-          onClick={() => onTextClick(block.text, block.bbox)}
-          isHovered={isActive}
+          selectedId={selectedId}
+          onSelect={onSelect}
         />
       )
       break
@@ -86,11 +118,12 @@ const SectionBlockRenderer = ({ block, onTextClick, hoveredId, hovered, pdfHeigh
     default:
       content = null
   }
+
   return (
-    <div ref={ref}>
+    <div ref={ref} className={wrapperClass.trim()}>
       {content}
     </div>
   )
-};
+}
 
-export default SectionBlockRenderer;
+export default SectionBlockRenderer
