@@ -19,7 +19,7 @@ const HighlightBox = ({ bbox, scale = 1, pdfHeight = 1000, type }: Props) => {
     top: top - 5,
     width: (bbox.r - bbox.l) * scale,
     height: height + 10,
-    backgroundColor: type === 'pdf' ? 'rgba(0, 255, 255, 0.3)' : 'rgba(255, 255, 0, 0.3)', // 💡 여기 분기
+    backgroundColor: type === 'pdf' ? 'rgba(0, 255, 255, 0.3)' : 'rgba(255, 255, 0, 0.3)',
     border: type === 'pdf' ? '1px solid cyan' : undefined,
     pointerEvents: 'none' as const,
     zIndex: 10,
